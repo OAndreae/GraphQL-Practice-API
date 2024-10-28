@@ -1,0 +1,25 @@
+type Query {
+    repository(owner: String!, name: String!): Repository
+}
+
+type Repository {
+    id: ID!
+    name: String!
+    description: String
+    starCount: Int!
+    issues(first: Int = 10): [Issue!]!
+    contributors(first: Int = 10): [Contributor!]!
+}
+
+type Issue {
+    number: Int!
+    title: String!
+    state: String!
+    createdAt: String!
+}
+
+type Contributor {
+    login: String!
+    contributions: Int!
+    avatarUrl: String!
+}

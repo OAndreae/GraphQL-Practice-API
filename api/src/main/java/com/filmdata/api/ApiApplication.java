@@ -12,9 +12,8 @@ public class ApiApplication {
 		SpringApplication.run(ApiApplication.class, args);
 	}
 
-    @Bean
-    WebClient.Builder webClientBuilder() {
-		return WebClient.builder();
+	@Bean
+	public WebClient mainWebClient(WebClient.Builder builder) {
+		return builder.build();
 	}
-
 }

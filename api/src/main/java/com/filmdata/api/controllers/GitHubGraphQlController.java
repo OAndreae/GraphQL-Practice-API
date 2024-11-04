@@ -2,10 +2,17 @@ package com.filmdata.api.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.filmdata.api.models.Repository;
+
+import graphql.schema.DataFetchingEnvironment;
+
 import com.filmdata.api.models.Issue;
 import com.filmdata.api.models.Contributor;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,7 +24,7 @@ import reactor.core.publisher.Mono;
 public class GitHubGraphQlController {
     private final WebClient webClient;
 
-    @SchemaMapping(typeName = "Query")
+    @QueryMapping
     public Mono<Repository> repository(@Argument String owner, @Argument String name) {
         return webClient.get()
             .uri("/repos/{owner}/{name}", owner, name)
@@ -32,12 +39,13 @@ public class GitHubGraphQlController {
     }
 
     @SchemaMapping(typeName = "Repository")
-    public Flux<Issue> issues(Repository repository, @Argument Integer first) {
+    public Flux<Issue> issues(Repository repository, @Argument Integer first, DataFetchingEnvironment env) {
+        Map<String, Object> arguments = env.getExecutionStepInfo().getParent().getArguments();
+        String owner = (String) arguments.get("owner");
+        String name = (String) arguments.get("name");
+        
         return webClient.get()
-            .uri("/repos/{owner}/{name}/issues?per_page={first}",
-                 repository.getName().split("/")[0],
-                 repository.getName().split("/")[1],
-                 first)
+            .uri("/repos/{owner}/{name}/issues?per_page={first}", owner, name, first)
             .retrieve()
             .bodyToFlux(JsonNode.class)
             .map(json -> Issue.builder()

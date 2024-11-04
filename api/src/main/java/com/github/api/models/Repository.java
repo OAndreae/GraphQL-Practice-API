@@ -1,4 +1,4 @@
-package com.filmdata.api.models;
+package com.github.api.models;
 
 import lombok.Builder;
 import lombok.Data;

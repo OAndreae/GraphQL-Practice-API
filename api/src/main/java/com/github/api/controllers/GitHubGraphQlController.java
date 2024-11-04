@@ -1,12 +1,11 @@
-package com.filmdata.api.controllers;
+package com.github.api.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.filmdata.api.models.Repository;
+import com.github.api.models.Contributor;
+import com.github.api.models.Issue;
+import com.github.api.models.Repository;
 
 import graphql.schema.DataFetchingEnvironment;
-
-import com.filmdata.api.models.Issue;
-import com.filmdata.api.models.Contributor;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
@@ -57,12 +56,13 @@ public class GitHubGraphQlController {
     }
 
     @SchemaMapping(typeName = "Repository")
-    public Flux<Contributor> contributors(Repository repository, @Argument Integer first) {
+    public Flux<Contributor> contributors(Repository repository, @Argument Integer first, DataFetchingEnvironment env) {
+        Map<String, Object> arguments = env.getExecutionStepInfo().getParent().getArguments();
+        String owner = (String) arguments.get("owner");
+        String name = (String) arguments.get("name");
+        
         return webClient.get()
-            .uri("/repos/{owner}/{name}/contributors?per_page={first}",
-                 repository.getName().split("/")[0],
-                 repository.getName().split("/")[1],
-                 first)
+            .uri("/repos/{owner}/{name}/contributors?per_page={first}", owner, name, first)
             .retrieve()
             .bodyToFlux(JsonNode.class)
             .map(json -> Contributor.builder()

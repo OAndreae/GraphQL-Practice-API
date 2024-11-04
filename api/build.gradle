@@ -28,6 +28,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.projectlombok:lombok'
 	implementation 'me.paulschwarz:spring-dotenv:4.0.0'  // Added for .env support
+	implementation 'io.github.cdimascio:dotenv-java:3.0.0'  // Add this line for core dotenv support
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
